@@ -29,6 +29,7 @@ COGS = [
     "cogs.listener",
     "cogs.web_sync",
     "cogs.browse",
+    "cogs.research",
 ]
 
 
