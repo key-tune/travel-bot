@@ -21,9 +21,28 @@ GROUP_SIZE = 7
 MAIN_GROUP_SIZE = 6  # NRT/HND group
 NGO_GROUP_SIZE = 1
 
+# ── Confirmed flights ────────────────────────────────────
+RETURN_FLIGHT_MAIN = {
+    "flight": "5J5064",
+    "airline": "セブパシフィック航空",
+    "date": "2026-06-28",
+    "departure": "04:30",
+    "arrival": "10:40",
+    "duration": "5時間10分",
+    "origin": "CEB マクタン・セブ国際空港T2",
+    "destination": "NRT 成田国際空港T2",
+    "price_per_person": 39420,
+    "booking_ref": "1385432295606705",
+}
+# TODO: NGO便の情報が入り次第追加
+RETURN_FLIGHT_NGO = None
+
+# ── Trip dates ────────────────────────────────────────────
+RETURN_DATE = "2026-06-28"
+
 # ── Defaults ──────────────────────────────────────────────
 DEFAULT_CURRENCY = "JPY"
-DEFAULT_ADULTS = 1  # Amadeus searches per-person
+DEFAULT_ADULTS = 1
 
 # ── Price monitor ─────────────────────────────────────────
 MONITOR_INTERVAL_HOURS = 6

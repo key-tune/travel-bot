@@ -1,4 +1,4 @@
-"""Hotel search and favourites cog."""
+"""Hotel search and favourites cog — powered by SerpApi (Google Hotels)."""
 
 import logging
 
@@ -6,8 +6,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from config import COLOUR_HOTEL, HOTEL_AREAS, GROUP_SIZE
-from services.amadeus_client import AmadeusClient
+from config import COLOUR_HOTEL, HOTEL_AREAS
+from services.serpapi_client import SerpApiClient
 from database import get_db
 
 log = logging.getLogger(__name__)
@@ -52,15 +52,16 @@ class HotelVoteView(discord.ui.View):
 class HotelsCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.amadeus = AmadeusClient()
+        self.serpapi = SerpApiClient()
 
     async def cog_unload(self):
-        await self.amadeus.close()
+        await self.serpapi.close()
 
     @app_commands.command(name="hotels", description="セブのホテル検索")
     @app_commands.describe(
         area="エリア: cebu_city / mactan / resort",
-        budget_max="1泊あたり上限予算 (JPY)",
+        check_in="チェックイン日 (YYYY-MM-DD)",
+        check_out="チェックアウト日 (YYYY-MM-DD)",
     )
     @app_commands.choices(
         area=[
@@ -73,38 +74,42 @@ class HotelsCog(commands.Cog):
         self,
         interaction: discord.Interaction,
         area: str = "mactan",
-        budget_max: int | None = None,
+        check_in: str = "",
+        check_out: str = "",
     ):
         await interaction.response.defer()
 
         area_info = HOTEL_AREAS.get(area, HOTEL_AREAS["mactan"])
-        results = await self.amadeus.search_hotels(
-            lat=area_info["lat"],
-            lng=area_info["lng"],
-            radius=area_info["radius"],
+        query = f"Hotels in {area_info['label']} Cebu Philippines"
+
+        data = await self.serpapi.search_hotels(
+            query=query,
+            check_in=check_in,
+            check_out=check_out,
+            adults=2,
         )
+        hotels = self.serpapi.parse_hotels(data)
 
         embed = discord.Embed(
             title=f"🏨 ホテル検索: {area_info['label']}",
-            description=f"7人グループ向け | {len(results)}件見つかりました",
+            description=f"7人グループ向け | {len(hotels)}件見つかりました",
             colour=COLOUR_HOTEL,
         )
 
-        if not results:
+        if not hotels:
             embed.description = "ホテルが見つかりませんでした"
             await interaction.followup.send(embed=embed)
             return
 
-        for i, h in enumerate(results[:10], 1):
-            name = h.get("name", "不明")
-            hotel_id_str = h.get("hotelId", "")
-            distance = h.get("distance", {})
-            dist_val = distance.get("value", "?")
-            dist_unit = distance.get("unit", "KM")
+        for i, h in enumerate(hotels[:10], 1):
+            price_str = f"¥{h['price']:,}" if h["price"] else "価格不明"
+            rating_str = f"⭐{h['rating']}" if h["rating"] else ""
+            reviews_str = f"({h['reviews']}件)" if h["reviews"] else ""
+            type_str = h["type"] if h["type"] else ""
 
             embed.add_field(
-                name=f"{i}. {name}",
-                value=f"📍 {dist_val} {dist_unit} | ID: {hotel_id_str}",
+                name=f"{i}. {h['name']}",
+                value=f"💰 {price_str}  {rating_str} {reviews_str}  {type_str}",
                 inline=False,
             )
 
@@ -162,10 +167,8 @@ class HotelsCog(commands.Cog):
         try:
             cursor = await db.execute(
                 """SELECT h.*, COALESCE(SUM(hv.vote), 0) as score
-                   FROM hotels h
-                   LEFT JOIN hotel_votes hv ON h.id = hv.hotel_id
-                   GROUP BY h.id
-                   ORDER BY score DESC"""
+                   FROM hotels h LEFT JOIN hotel_votes hv ON h.id = hv.hotel_id
+                   GROUP BY h.id ORDER BY score DESC"""
             )
             hotels = await cursor.fetchall()
 
@@ -173,10 +176,7 @@ class HotelsCog(commands.Cog):
                 await interaction.response.send_message("まだお気に入りホテルがありません。`/hotel-save` で追加！")
                 return
 
-            embed = discord.Embed(
-                title="⭐ お気に入りホテル一覧",
-                colour=COLOUR_HOTEL,
-            )
+            embed = discord.Embed(title="⭐ お気に入りホテル一覧", colour=COLOUR_HOTEL)
             for h in hotels:
                 price_str = f"¥{h['price_per_night']:,.0f}/泊" if h["price_per_night"] else "価格未設定"
                 rating_str = f"⭐{h['rating']}" if h["rating"] else ""
@@ -186,7 +186,6 @@ class HotelsCog(commands.Cog):
                     value=f"{price_str}  {rating_str}  {h['area'] or ''}",
                     inline=False,
                 )
-
             await interaction.response.send_message(embed=embed)
         finally:
             await db.close()

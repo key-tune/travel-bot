@@ -19,12 +19,14 @@ logging.basicConfig(
 log = logging.getLogger("travel-bot")
 
 COGS = [
+    "cogs.setup",
     "cogs.flights",
     "cogs.hotels",
     "cogs.planner",
     "cogs.budget",
     "cogs.ask",
     "cogs.dashboard",
+    "cogs.listener",
 ]
 
 
