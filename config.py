@@ -38,7 +38,23 @@ RETURN_FLIGHT_MAIN = {
 RETURN_FLIGHT_NGO = None
 
 # ── Trip dates ────────────────────────────────────────────
+TRIP_START = "2026-06-25"
 RETURN_DATE = "2026-06-28"
+TRIP_DAYS = 4  # 3泊4日
+
+# ── Members ───────────────────────────────────────────────
+MEMBERS = {
+    "wako": "わこ",
+    "emura": "えむら",
+    "hachiga": "はちが",
+    "miyabayashi": "みやばやし",
+    "kusama": "くさま",
+    "masataka": "まさたか",
+    "togo": "とおご",
+}
+
+# ── Web app ───────────────────────────────────────────────
+WEB_URL = "https://orfevre.xyz/philippines/"
 
 # ── Defaults ──────────────────────────────────────────────
 DEFAULT_CURRENCY = "JPY"

@@ -27,6 +27,7 @@ COGS = [
     "cogs.ask",
     "cogs.dashboard",
     "cogs.listener",
+    "cogs.web_sync",
 ]
 
 
