@@ -28,6 +28,7 @@ COGS = [
     "cogs.dashboard",
     "cogs.listener",
     "cogs.web_sync",
+    "cogs.browse",
 ]
 
 

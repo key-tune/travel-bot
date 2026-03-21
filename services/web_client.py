@@ -14,12 +14,15 @@ SHIORI_URL = f"{API_URL}/shiori"
 
 class WebClient:
     def __init__(self):
-        self._client = httpx.AsyncClient(timeout=15)
-        self._logged_in = False
+        token = os.getenv("WEB_API_TOKEN", "")
+        headers = {"Authorization": f"Bearer {token}"} if token else {}
+        self._client = httpx.AsyncClient(timeout=15, headers=headers)
+        self._token = token
 
     async def _ensure_login(self):
-        if self._logged_in:
+        if self._token:
             return
+        # Fallback to password login if no token
         resp = await self._client.post(
             f"{API_URL}/login",
             json={
@@ -29,7 +32,7 @@ class WebClient:
         )
         data = resp.json()
         if data.get("ok"):
-            self._logged_in = True
+            self._token = "session"
             log.info("Logged in to web app as %s", data.get("member"))
         else:
             log.error("Web login failed: %s", data)
