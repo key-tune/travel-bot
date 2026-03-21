@@ -30,6 +30,7 @@ COGS = [
     "cogs.web_sync",
     "cogs.browse",
     "cogs.research",
+    "cogs.menu",
 ]
 
 
