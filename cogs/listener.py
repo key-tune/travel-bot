@@ -17,6 +17,7 @@ LISTEN_CHANNELS = {
     "日程調整", "フライト", "ホテル", "旅程プラン",
     "予算相談", "観光スポット", "グルメ", "ショッピング",
     "ai質問", "bot-commands", "雑談", "一般",
+    "機能要望", "バグ報告", "開発ログ", "渡航情報",
 }
 
 # Intent detection keywords
@@ -27,6 +28,7 @@ FOOD_KEYWORDS = ["レストラン", "飯", "ご飯", "食事", "グルメ", "レ
 FLIGHT_KEYWORDS = ["フライト", "便", "航空", "飛行機"]
 BUDGET_KEYWORDS = ["割り勘", "精算", "経費", "いくら", "お金", "予算"]
 SCHEDULE_KEYWORDS = ["スケジュール", "予定", "旅程", "日程"]
+TRAVEL_INFO_KEYWORDS = ["渡航", "ビザ", "パスポート", "入国", "保険", "治安", "安全", "両替", "SIM", "持ち物", "緊急"]
 
 
 def _detect_intent(text: str) -> str | None:
@@ -40,6 +42,8 @@ def _detect_intent(text: str) -> str | None:
         return "research_activities"
     if any(k in text_lower for k in FOOD_KEYWORDS) and has_research:
         return "research_food"
+    if any(k in text_lower for k in TRAVEL_INFO_KEYWORDS):
+        return "travel_info"
     if any(k in text_lower for k in BUDGET_KEYWORDS):
         return "budget"
     if any(k in text_lower for k in SCHEDULE_KEYWORDS):
@@ -217,6 +221,8 @@ class ListenerCog(commands.Cog):
 
         if intent and intent.startswith("research_"):
             await self._handle_research(message, intent)
+        elif intent == "travel_info":
+            await self._handle_research(message, "research_free")
         elif intent == "budget":
             await self._handle_budget(message)
         elif intent == "schedule":

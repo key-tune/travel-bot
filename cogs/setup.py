@@ -28,6 +28,7 @@ CATEGORIES = {
         {"name": "グルメ", "topic": "レストラン・カフェ情報"},
         {"name": "ショッピング", "topic": "お土産・買い物情報"},
         {"name": "ai質問", "topic": "/ask でAIに旅行の質問"},
+        {"name": "渡航情報", "topic": "/travel-info でビザ・安全・保険・持ち物など"},
     ],
     "🤖 Bot": [
         {"name": "bot-commands", "topic": "Botコマンド実行用"},

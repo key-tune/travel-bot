@@ -31,6 +31,7 @@ COGS = [
     "cogs.browse",
     "cogs.research",
     "cogs.menu",
+    "cogs.travel_info",
 ]
 
 
