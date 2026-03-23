@@ -20,18 +20,20 @@ log = logging.getLogger("travel-bot")
 
 COGS = [
     "cogs.setup",
-    "cogs.flights",
-    "cogs.hotels",
-    "cogs.planner",
-    "cogs.budget",
-    "cogs.ask",
-    "cogs.dashboard",
-    "cogs.listener",
-    "cogs.web_sync",
-    "cogs.browse",
-    "cogs.research",
-    "cogs.menu",
-    "cogs.travel_info",
+    "cogs.flights",         # /flights (往路・復路検索)
+    "cogs.listener",        # 自然言語応答 (bot呼びかけ時)
+    "cogs.web_sync",        # /web-schedule, /web-expenses etc (Web読み取り)
+    "cogs.web_write",       # /want, /todo, /pay (Web書き込み)
+    "cogs.research",        # /research, /research-hotels etc
+    "cogs.menu",            # /menu (ボタンUI)
+    "cogs.travel_info",     # /travel-info, /emergency
+    "cogs.ask",             # /ask (AI質問)
+    "cogs.browse",          # /browse (Webスクショ)
+    # 以下はWeb側に機能があるため無効化
+    # "cogs.hotels",        # → Web "やりたいこと" + /research-hotels
+    # "cogs.planner",       # → Web スケジュール
+    # "cogs.budget",        # → Web 割り勘 + /pay
+    # "cogs.dashboard",     # → Web ホーム画面
 ]
 
 
