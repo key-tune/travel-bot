@@ -74,7 +74,7 @@ class ResearchService:
     async def _generate_queries(self, topic: str) -> list[str]:
         """Ask Claude to generate optimal search queries."""
         resp = await self.claude.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-haiku-4-5-20251001",
             max_tokens=300,
             system=(
                 "あなたは旅行リサーチの専門家です。"
@@ -99,7 +99,7 @@ class ResearchService:
             results_text += f"\n{i}. {r['title']}\n   URL: {r['link']}\n   {r['snippet']}\n"
 
         resp = await self.claude.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-haiku-4-5-20251001",
             max_tokens=2048,
             system="""\
 あなたはフィリピン・セブ旅行のリサーチアシスタントです。
@@ -108,16 +108,13 @@ class ResearchService:
 
 Web検索結果を分析して、具体的で実用的なレポートを作成してください。
 
-重要なポイント:
-- 具体的な価格（PHP/JPY）を必ず含める
-- 場所・アクセス方法を明記
+重要なルール:
+- 検索結果に書いてある情報だけを使う。推測や捏造は絶対にしない。
+- 価格は検索結果に明記されている場合のみ記載。不明なら「要確認」と書く。
+- 場所・アクセス方法は検索結果から確認できる範囲で。
 - 7人グループに適しているかの判断
-- 予約方法やおすすめの手配方法
-- 注意点やリスク
-- 複数の選択肢を比較して提示
 - URLの出典を明記
-
-人が実際に予約・手配できるレベルの情報精度を目指してください。""",
+- 簡潔に。箇条書きを活用して読みやすくする。""",
             messages=[
                 {
                     "role": "user",

@@ -202,14 +202,10 @@ class ListenerCog(commands.Cog):
             return
 
         bot_mentioned = self.bot.user in message.mentions if self.bot.user else False
-        is_ai_channel = channel_name == "ai質問"
-        is_question = content.endswith("？") or content.endswith("?")
-        is_request = any(k in content for k in RESEARCH_KEYWORDS + BUDGET_KEYWORDS + SCHEDULE_KEYWORDS)
+        has_bot_keyword = "bot" in content.lower() or "ボット" in content or "ぼっと" in content
 
-        # Determine if we should respond
-        should_respond = bot_mentioned or is_ai_channel or is_question or is_request
-
-        if not should_respond:
+        # Only respond when bot is mentioned or "bot" appears in the message
+        if not bot_mentioned and not has_bot_keyword:
             return
 
         # Clean up message
