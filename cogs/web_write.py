@@ -67,6 +67,55 @@ class WebWriteCog(commands.Cog):
         except Exception as e:
             await interaction.followup.send(f"❌ エラー: {e}")
 
+    @app_commands.command(name="schedule-add", description="スケジュールをWebページに追加")
+    @app_commands.describe(
+        day="日目 (1=6/25, 2=6/26, 3=6/27, 4=6/28)",
+        time="開始時間 (例: 09:00)",
+        title="予定タイトル",
+        end_time="終了時間 (例: 12:00)",
+        description="詳細（任意）",
+    )
+    @app_commands.choices(
+        day=[
+            app_commands.Choice(name="Day1 6/25(木)", value=1),
+            app_commands.Choice(name="Day2 6/26(金)", value=2),
+            app_commands.Choice(name="Day3 6/27(土)", value=3),
+            app_commands.Choice(name="Day4 6/28(日)", value=4),
+        ]
+    )
+    async def schedule_add(
+        self,
+        interaction: discord.Interaction,
+        day: int,
+        time: str,
+        title: str,
+        end_time: str = "",
+        description: str = "",
+    ):
+        await interaction.response.defer()
+        all_members = "wako,emura,hachiga,miyabayashi,kusama,masataka,togo"
+        DAY_LABELS = {1: "6/25(木)", 2: "6/26(金)", 3: "6/27(土)", 4: "6/28(日)"}
+        try:
+            result = await self.web.add_schedule(
+                day=day, time_slot=time, title=title,
+                end_time=end_time, description=description,
+                members=all_members,
+            )
+            time_str = f"{time}〜{end_time}" if end_time else time
+            embed = discord.Embed(
+                title=f"📅 スケジュール追加: {title}",
+                colour=COLOUR_PLAN,
+                url=WEB_URL,
+            )
+            embed.add_field(name="日程", value=DAY_LABELS.get(day, f"Day{day}"), inline=True)
+            embed.add_field(name="時間", value=time_str, inline=True)
+            if description:
+                embed.add_field(name="詳細", value=description, inline=False)
+            embed.set_footer(text=f"Webページにも反映済み → {WEB_URL}")
+            await interaction.followup.send(embed=embed)
+        except Exception as e:
+            await interaction.followup.send(f"❌ エラー: {e}")
+
     @app_commands.command(name="pay", description="経費をWebページに追加")
     @app_commands.describe(
         title="内容 (例: ホテル代)",
