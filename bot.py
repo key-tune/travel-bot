@@ -29,6 +29,7 @@ COGS = [
     "cogs.travel_info",     # /travel-info, /emergency
     "cogs.ask",             # /ask (AI質問)
     "cogs.browse",          # /browse (Webスクショ)
+    "cogs.daily_tips",      # 毎朝9時にセブ旅行Tips自動投稿
     # 以下はWeb側に機能があるため無効化
     # "cogs.hotels",        # → Web "やりたいこと" + /research-hotels
     # "cogs.planner",       # → Web スケジュール

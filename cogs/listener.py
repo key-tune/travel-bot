@@ -18,6 +18,7 @@ LISTEN_CHANNELS = {
     "予算相談", "観光スポット", "グルメ", "ショッピング",
     "ai質問", "bot-commands", "雑談", "一般",
     "機能要望", "バグ報告", "開発ログ", "渡航情報",
+    "claude-direct",
 }
 
 # Intent detection keywords
@@ -201,10 +202,13 @@ class ListenerCog(commands.Cog):
         if not content:
             return
 
+        # claude-direct is handled by MCP Channels (Opus), not this bot
+        if channel_name == "claude-direct":
+            return
+
         bot_mentioned = self.bot.user in message.mentions if self.bot.user else False
         has_bot_keyword = "bot" in content.lower() or "ボット" in content or "ぼっと" in content
 
-        # Only respond when bot is mentioned or "bot" appears in the message
         if not bot_mentioned and not has_bot_keyword:
             return
 
