@@ -140,6 +140,54 @@ class WebClient:
         resp = await self._client.get(f"{SHIORI_URL}/settlements")
         return resp.json()
 
+    # ── Payment requests (v0.5.0) ──
+    async def request_payment(self, expense_id: int) -> dict:
+        await self._ensure_login()
+        resp = await self._client.post(f"{SHIORI_URL}/expenses/{expense_id}/request-payment")
+        return resp.json()
+
+    async def cancel_payment_request(self, expense_id: int) -> dict:
+        await self._ensure_login()
+        resp = await self._client.post(f"{SHIORI_URL}/expenses/{expense_id}/cancel-request")
+        return resp.json()
+
+    async def confirm_payment(self, expense_id: int, member_id: str, role: str) -> dict:
+        await self._ensure_login()
+        resp = await self._client.patch(
+            f"{SHIORI_URL}/expenses/{expense_id}/confirm-payment",
+            json={"member_id": member_id, "role": role},
+        )
+        return resp.json()
+
+    async def get_pending_requests(self) -> list[dict]:
+        await self._ensure_login()
+        resp = await self._client.get(f"{SHIORI_URL}/expenses/pending-requests")
+        return resp.json()
+
+    # ── Packing (v0.5.0) ──
+    async def get_packing(self) -> list[dict]:
+        await self._ensure_login()
+        resp = await self._client.get(f"{SHIORI_URL}/packing")
+        return resp.json()
+
+    async def add_packing(self, category: str, name: str) -> dict:
+        await self._ensure_login()
+        resp = await self._client.post(
+            f"{SHIORI_URL}/packing",
+            json={"category": category, "name": name},
+        )
+        return resp.json()
+
+    async def toggle_packing(self, item_id: int) -> dict:
+        await self._ensure_login()
+        resp = await self._client.patch(f"{SHIORI_URL}/packing/{item_id}/toggle")
+        return resp.json()
+
+    async def delete_packing(self, item_id: int) -> dict:
+        await self._ensure_login()
+        resp = await self._client.delete(f"{SHIORI_URL}/packing/{item_id}")
+        return resp.json()
+
     # ── Rate ──
     async def get_rate(self) -> dict:
         await self._ensure_login()
